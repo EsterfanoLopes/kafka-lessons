@@ -23,6 +23,7 @@ services:
     restart: unless-stopped
     ports:
       - "29092:29092"
+      - "9092:9092"
     volumes:
       - kafka:/kafka/data
     environment:
@@ -31,7 +32,7 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://:29092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://127.0.0.1:29092
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       ZOOKEEPER_CONNECT: zk:2181
     depends_on:
       - zk
@@ -84,7 +85,7 @@ services:
       POSTGRES_DB: database
     command: ["postgres", "-c", "wal_level=logical"]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U database"]
+      test: ["CMD", "pg_isready", "-U", "username", "-d", "database"]
       interval: 2s
       timeout: 3s
       retries: 30
